@@ -5,11 +5,10 @@ rotations.
 
 package quanternion
 
-
-// q = w + Xi + Yj + Zk
+// Quternion: q = w + Xi + Yj + Zk
 type Quanternion struct {
-	W  float64  \\ sin(theta/2)
-	X  float64  \\ vx
-	Y  float64  \\ vy
-	Z  float64  \\ vz
+	W float64 // sin(theta/2)
+	X float64 // vx
+	Y float64 // vy
+	Z float64 // vz
 }
