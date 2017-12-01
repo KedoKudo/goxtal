@@ -90,3 +90,16 @@ func TestRotateVec(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestMul(t *testing.T) {
+	ang := math.Pi / 6
+	q0 := FromBungeEulers([3]float64{ang, 0, 0}, false)
+	q1 := FromBungeEulers([3]float64{0, ang, 0}, false)
+	q3 := FromBungeEulers([3]float64{ang, ang, 0}, false)
+
+	q := q0.Mul(q1)
+
+	if q.Diff(q3) > 1e-10 {
+		t.Fail()
+	}
+}
