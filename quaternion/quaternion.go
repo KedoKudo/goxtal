@@ -113,6 +113,30 @@ func FromAngleAxis(ang float64, axis [3]float64, indegree bool) Quaternion {
 	return q
 }
 
+// FromBungeEulers returns a quaternion converted from given Bunge Euler angles
+func FromBungeEulers(eulers [3]float64, indegree bool) Quaternion {
+	// convert to radians for calculation
+	if indegree {
+		for i, v := range eulers {
+			eulers[i] = v / 180 * math.Pi
+		}
+	}
+
+	var c [3]float64
+	var s [3]float64
+	for i, v := range eulers {
+		c[i] = math.Cos(v)
+		s[i] = math.Sin(v)
+	}
+
+	return Quaternion{
+		W: c[0]*c[1]*c[2] - s[0]*c[1]*s[2],
+		X: c[0]*s[1]*c[2] + s[0]*s[1]*s[2],
+		Y: -c[0]*s[1]*s[2] + s[0]*s[1]*c[2],
+		Z: c[0]*c[1]*s[2] + s[0]*c[1]*c[2],
+	}
+}
+
 // Mul multiply self with new quaternion, representing continuous rotation
 func (q *Quaternion) Mul(q2 Quaternion) Quaternion {
 	Aw := q.W
