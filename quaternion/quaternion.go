@@ -54,11 +54,34 @@ func (q *Quaternion) AsMatrix() [3][3]float64 {
 	return m
 }
 
-// RandomQuaternion returns a random unit length quanternion vector
+// RandomQuaternion returns a random quaternion vector with unit length
 func RandomQuaternion() Quaternion {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
-	q := Quaternion{2 * (r.Float64() - 0.5), 2 * (r.Float64() - 0.5), 2 * (r.Float64() - 0.5), 2 * (r.Float64() - 0.5)}
+	v := [3]float64{r.Float64(), r.Float64(), r.Float64()}
+	q := Quaternion{1, 0, 0, 0}
+	q.W = math.Cos(2*math.Pi*v[0]) * math.Sqrt(v[2])
+	q.X = math.Sin(2*math.Pi*v[1]) * math.Sqrt(1-v[2])
+	q.Y = math.Cos(2*math.Pi*v[1]) * math.Sqrt(1-v[2])
+	q.Z = math.Sin(2*math.Pi*v[0]) * math.Sqrt(v[2])
+
+	return q
+}
+
+// QuaternionFromAngleAxis returns a quaternion converted from angle axis pair
+func QuaternionFromAngleAxis(ang float64, axis [3]float64, indegree bool) Quaternion {
+	if indegree {
+		ang = ang / 180 * math.Pi
+	}
+
+	axisVectorLen := math.Sqrt(axis[0]*axis[0] + axis[1]*axis[1] + axis[2]*axis[2])
+
+	q := Quaternion{1, 0, 0, 0}
+
+	q.W = math.Cos(ang / 2)
+	q.X = math.Sin(ang/2) * axis[0] / axisVectorLen
+	q.Y = math.Sin(ang/2) * axis[1] / axisVectorLen
+	q.Z = math.Sin(ang/2) * axis[2] / axisVectorLen
 
 	return q
 }
