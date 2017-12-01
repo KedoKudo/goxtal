@@ -144,8 +144,8 @@ func FromBungeEulers(eulers [3]float64, indegree bool) Quaternion {
 	var c [3]float64
 	var s [3]float64
 	for i, v := range eulers {
-		c[i] = math.Cos(v)
-		s[i] = math.Sin(v)
+		c[i] = math.Cos(v / 2)
+		s[i] = math.Sin(v / 2)
 	}
 
 	return Quaternion{
