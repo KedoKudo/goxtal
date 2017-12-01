@@ -35,6 +35,25 @@ func (q *Quaternion) Normalize() {
 
 }
 
+// Mul multiply self with new quaternion, representing continuous rotation
+func (q *Quaternion) Mul(q2 Quaternion) Quaternion {
+	Aw := q.W
+	Ax := q.X
+	Ay := q.Y
+	Az := q.Z
+	Bw := q2.W
+	Bx := q2.X
+	By := q2.Y
+	Bz := q2.Z
+
+	return Quaternion{
+		W: -Ax*Bx - Ay*By - Az*Bz + Aw*Bw,
+		X: +Ax*Bw + Ay*Bz - Az*By + Aw*Bx,
+		Y: -Ax*Bz + Ay*Bw + Az*Bx + Aw*By,
+		Z: +Ax*By - Ay*Bx + Az*Bw + Aw*Bz,
+	}
+}
+
 // AsMatrix returns the rotation matrix equivalent of given quaternion
 func (q *Quaternion) AsMatrix() [3][3]float64 {
 	m := [3][3]float64{}
@@ -134,24 +153,5 @@ func FromBungeEulers(eulers [3]float64, indegree bool) Quaternion {
 		X: c[0]*s[1]*c[2] + s[0]*s[1]*s[2],
 		Y: -c[0]*s[1]*s[2] + s[0]*s[1]*c[2],
 		Z: c[0]*c[1]*s[2] + s[0]*c[1]*c[2],
-	}
-}
-
-// Mul multiply self with new quaternion, representing continuous rotation
-func (q *Quaternion) Mul(q2 Quaternion) Quaternion {
-	Aw := q.W
-	Ax := q.X
-	Ay := q.Y
-	Az := q.Z
-	Bw := q2.W
-	Bx := q2.X
-	By := q2.Y
-	Bz := q2.Z
-
-	return Quaternion{
-		W: -Ax*Bx - Ay*By - Az*Bz + Aw*Bw,
-		X: +Ax*Bw + Ay*Bz - Az*By + Aw*Bx,
-		Y: -Ax*Bz + Ay*Bw + Az*Bx + Aw*By,
-		Z: +Ax*By - Ay*Bx + Az*Bw + Aw*Bz,
 	}
 }
