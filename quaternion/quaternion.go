@@ -54,6 +54,16 @@ func (q *Quaternion) Mul(q2 Quaternion) Quaternion {
 	}
 }
 
+// AsArray returns the quaternion as a simple float64 array
+func (q *Quaternion) AsArray() [4]float64 {
+	return [4]float64{q.W, q.X, q.Y, q.Z}
+}
+
+// Diff returns the total difference between two quaternions
+func (q *Quaternion) Diff(q2 Quaternion) float64 {
+	return math.Abs(q.W - q2.W + q.X - q2.X + q.Y - q2.Y + q.Z - q2.Z)
+}
+
 // AsMatrix returns the rotation matrix equivalent of given quaternion
 func (q *Quaternion) AsMatrix() [3][3]float64 {
 	m := [3][3]float64{}
