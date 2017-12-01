@@ -131,8 +131,8 @@ func (q *Quaternion) RotateVec(v [3]float64) [3]float64 {
 	return rotatedV
 }
 
-// Scale scales the quanternion by given scalar
-func (q *Quaternion) Scale(s float64) {
+// ScaledBy scales the quanternion by given scalar
+func (q *Quaternion) ScaledBy(s float64) {
 	q.W = q.W * s
 	q.X = q.X * s
 	q.Y = q.Y * s

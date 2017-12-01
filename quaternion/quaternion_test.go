@@ -27,8 +27,8 @@ var (
 	vRotedTarget = [3]float64{0, math.Sqrt(2), 0}
 )
 
-func TestScale(t *testing.T) {
-	q00.Scale(s00)
+func TestScaledBy(t *testing.T) {
+	q00.ScaledBy(s00)
 	if q00 != q01 {
 		t.Fail()
 	}
@@ -40,9 +40,37 @@ func TestNorm(t *testing.T) {
 	}
 }
 
+func TestNormalize(t *testing.T) {
+	qtmp := q20.Normalize()
+	if qtmp != q21 {
+		t.Fail()
+	}
+}
+
 func TestNormalized(t *testing.T) {
 	q20.Normalized()
 	if q20 != q21 {
+		t.Fail()
+	}
+}
+
+func TestConjugate(t *testing.T) {
+	q := Random()
+	qstar := q.Conjugate()
+
+	err := (q.W - qstar.W) + (q.X + qstar.X) + (q.Y + qstar.Y) + (q.Z + qstar.Z)
+
+	if math.Abs(err) > 1e-10 {
+		t.Fail()
+	}
+}
+
+func TestConjugated(t *testing.T) {
+	q := Random()
+	qstar := q.Conjugate()
+	q.Conjugated()
+
+	if q != qstar {
 		t.Fail()
 	}
 }
