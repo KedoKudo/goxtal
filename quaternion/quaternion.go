@@ -24,15 +24,44 @@ func (q *Quaternion) Norm() float64 {
 	return math.Sqrt(q.W*q.W + q.X*q.X + q.Y*q.Y + q.Z*q.Z)
 }
 
-// Normalize  normalize quanternion norm to 1 (necessary for rotation)
-func (q *Quaternion) Normalize() {
-	var qnorm = q.Norm()
+// Conjugated convert the quaternion to its conjugate
+func (q *Quaternion) Conjugated() {
+	q.X = -q.X
+	q.Y = -q.Y
+	q.Z = -q.Z
+}
+
+// Conjugate returns the conjugate of the quaternion
+func (q *Quaternion) Conjugate() Quaternion {
+	return Quaternion{
+		W: q.W,
+		X: -q.X,
+		Y: -q.Y,
+		Z: -q.Z,
+	}
+}
+
+// Normalized  normalize quanternion norm to 1 (necessary for rotation)
+func (q *Quaternion) Normalized() {
+	qnorm := q.Norm()
 
 	q.W = q.W / qnorm
 	q.X = q.X / qnorm
 	q.Y = q.Y / qnorm
 	q.Z = q.Z / qnorm
 
+}
+
+// Normalize returns the normalized quaternion
+func (q *Quaternion) Normalize() Quaternion {
+	qnorm := q.Norm()
+
+	return Quaternion{
+		W: q.W / qnorm,
+		X: q.X / qnorm,
+		Y: q.Y / qnorm,
+		Z: q.Z / qnorm,
+	}
 }
 
 // Mul multiply self with new quaternion, representing continuous rotation
@@ -54,14 +83,14 @@ func (q *Quaternion) Mul(q2 Quaternion) Quaternion {
 	}
 }
 
-// AsArray returns the quaternion as a simple float64 array
-func (q *Quaternion) AsArray() [4]float64 {
-	return [4]float64{q.W, q.X, q.Y, q.Z}
-}
-
 // Diff returns the total difference between two quaternions
 func (q *Quaternion) Diff(q2 Quaternion) float64 {
 	return math.Abs(q.W - q2.W + q.X - q2.X + q.Y - q2.Y + q.Z - q2.Z)
+}
+
+// AsArray returns the quaternion as a simple float64 array
+func (q *Quaternion) AsArray() [4]float64 {
+	return [4]float64{q.W, q.X, q.Y, q.Z}
 }
 
 // AsMatrix returns the rotation matrix equivalent of given quaternion
