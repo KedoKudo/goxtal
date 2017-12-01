@@ -2,4 +2,4 @@
 Testing for the quanternion packages
 */
 
-package quanternion
+package quaternion

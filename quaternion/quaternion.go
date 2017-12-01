@@ -3,7 +3,7 @@ Quanternion calculation for manipulating cyxtal orientations
 rotations.
 */
 
-package quanternion
+package quaternion
 
 import (
 	"math"
@@ -54,8 +54,35 @@ func (q *Quaternion) AsMatrix() [3][3]float64 {
 	return m
 }
 
-// RandomQuaternion returns a random quaternion vector with unit length
-func RandomQuaternion() Quaternion {
+// RotateVec rotates a vector using the quaternion
+func (q *Quaternion) RotateVec(v [3]float64) [3]float64 {
+	var rotatedV [3]float64
+
+	w := q.W
+	x := q.X
+	y := q.Y
+	z := q.Z
+	vx := v[0]
+	vy := v[1]
+	vz := v[2]
+
+	rotatedV[0] = w*w*vx + 2*y*w*vz - 2*z*w*vy + x*x*vx + 2*y*x*vy + 2*z*x*vz - z*z*vx - y*y*vx
+	rotatedV[1] = 2*x*y*vx + y*y*vy + 2*z*y*vz + 2*w*z*vx - z*z*vy + w*w*vy - 2*x*w*vz - x*x*vy
+	rotatedV[2] = 2*x*z*vx + 2*y*z*vy + z*z*vz - 2*w*y*vx - y*y*vz + 2*w*x*vy - x*x*vz + w*w*vz
+
+	return rotatedV
+}
+
+// Scale scales the quanternion by given scalar
+func (q *Quaternion) Scale(s float64) {
+	q.W = q.W * s
+	q.X = q.X * s
+	q.Y = q.Y * s
+	q.Z = q.Z * s
+}
+
+// Random returns a random quaternion vector with unit length
+func Random() Quaternion {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
 	v := [3]float64{r.Float64(), r.Float64(), r.Float64()}
@@ -68,8 +95,8 @@ func RandomQuaternion() Quaternion {
 	return q
 }
 
-// QuaternionFromAngleAxis returns a quaternion converted from angle axis pair
-func QuaternionFromAngleAxis(ang float64, axis [3]float64, indegree bool) Quaternion {
+// FromAngleAxis returns a quaternion converted from angle axis pair
+func FromAngleAxis(ang float64, axis [3]float64, indegree bool) Quaternion {
 	if indegree {
 		ang = ang / 180 * math.Pi
 	}
@@ -84,4 +111,23 @@ func QuaternionFromAngleAxis(ang float64, axis [3]float64, indegree bool) Quater
 	q.Z = math.Sin(ang/2) * axis[2] / axisVectorLen
 
 	return q
+}
+
+// Mul multiply self with new quaternion, representing continuous rotation
+func (q *Quaternion) Mul(q2 Quaternion) Quaternion {
+	Aw := q.W
+	Ax := q.X
+	Ay := q.Y
+	Az := q.Z
+	Bw := q2.W
+	Bx := q2.X
+	By := q2.Y
+	Bz := q2.Z
+
+	return Quaternion{
+		W: -Ax*Bx - Ay*By - Az*Bz + Aw*Bw,
+		X: +Ax*Bw + Ay*Bz - Az*By + Aw*Bx,
+		Y: -Ax*Bz + Ay*Bw + Az*Bx + Aw*By,
+		Z: +Ax*By - Ay*Bx + Az*Bw + Aw*Bz,
+	}
 }
