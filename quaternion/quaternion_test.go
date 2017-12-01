@@ -109,3 +109,30 @@ func TestMul(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestFromAngleAxis(t *testing.T) {
+	ang := math.Pi / 3
+	axis := [3]float64{1 / math.Sqrt(2), 1 / math.Sqrt(2), 0}
+	qtarget := Quaternion{
+		W: math.Cos(ang / 2),
+		X: math.Sin(ang/2) * axis[0],
+		Y: math.Sin(ang/2) * axis[1],
+		Z: math.Sin(ang/2) * axis[2],
+	}
+
+	q := FromAngleAxis(ang, [3]float64{1, 1, 0}, false)
+
+	if q.Diff(qtarget) > 1e-10 {
+		fmt.Println(q)
+		fmt.Println(axis)
+		fmt.Println(qtarget)
+		t.Fail()
+	}
+
+	angDegree := ang / math.Pi * 180
+	q2 := FromAngleAxis(angDegree, [3]float64{1, 1, 0}, true)
+
+	if q2.Diff(qtarget) > 1e-10 {
+		t.Fail()
+	}
+}
