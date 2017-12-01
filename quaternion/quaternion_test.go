@@ -40,8 +40,8 @@ func TestNorm(t *testing.T) {
 	}
 }
 
-func TestNormalize(t *testing.T) {
-	q20.Normalize()
+func TestNormalized(t *testing.T) {
+	q20.Normalized()
 	if q20 != q21 {
 		t.Fail()
 	}
