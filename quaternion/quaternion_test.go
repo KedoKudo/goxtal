@@ -52,6 +52,12 @@ func TestRandom(t *testing.T) {
 	t.Skip() // skip the test for random quanternion generator (no viable testing available)
 }
 
+func TestAsArray(t *testing.T) {
+	q := Random()
+	_ = q.AsArray()
+	t.Skip()
+}
+
 func TestFromEulers(t *testing.T) {
 	ang := math.Pi / 4
 	m := [3][3]float64{
