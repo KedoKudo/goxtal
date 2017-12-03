@@ -93,6 +93,50 @@ func (q *Quaternion) AsArray() [4]float64 {
 	return [4]float64{q.W, q.X, q.Y, q.Z}
 }
 
+// AsBungeEulers returns the Euler angles equivalent of the quaternion
+// Orientation as Bunge-Euler angles.
+//       Conversion of ACTIVE rotation to Euler angles taken from:
+//       Melcher, A.; Unser, A.; Reichhardt, M.; Nestler, B.; Poetschke, M.; Selzer, M.
+//       Conversion of EBSD data by a quaternion based algorithm to be used for grain structure simulations
+//       Technische Mechanik 30 (2010) pp 401--413.
+func (q *Quaternion) AsBungeEulers(indegree bool) [3]float64 {
+	eulers := [3]float64{0, 0, 0}
+
+	if (math.Abs(q.X) < 1e-10) && (math.Abs(q.Y) < 1e-10) {
+		cosphi1 := q.W*q.W - q.Z*q.Z
+		sinphi1 := 2 * q.W * q.Z
+		eulers[0] = math.Atan2(sinphi1, cosphi1)
+	} else if (math.Abs(q.W) < 1e-10) && (math.Abs(q.Z) < 1e-10) {
+		cosphi1 := q.X*q.X - q.Y*q.Y
+		sinphi1 := 2 * q.X * q.Y
+		eulers[0] = math.Atan2(sinphi1, cosphi1)
+
+		eulers[1] = math.Pi // PHI = pi
+	} else {
+		chi := math.Sqrt((q.W*q.W + q.Z*q.Z) * (q.X*q.X + q.Y*q.Y))
+
+		x := (q.W*q.X - q.Y*q.Z) / 2. / chi
+		y := (q.W*q.Y + q.X*q.Z) / 2. / chi
+		eulers[0] = math.Atan2(y, x)
+
+		x = q.W*q.W + q.Z*q.Z - (q.X*q.X + q.Y*q.Y)
+		y = 2 * chi
+		eulers[1] = math.Atan2(y, x)
+
+		x = (q.W*q.X + q.Y*q.Z) / 2. / chi
+		y = (q.Z*q.X - q.Y*q.W) / 2. / chi
+		eulers[2] = math.Atan2(y, x)
+	}
+
+	if indegree {
+		for i, v := range eulers {
+			eulers[i] = v / math.Pi * 180
+		}
+	}
+
+	return eulers
+}
+
 // AsMatrix returns the rotation matrix equivalent of given quaternion
 func (q *Quaternion) AsMatrix() [3][3]float64 {
 	m := [3][3]float64{}
