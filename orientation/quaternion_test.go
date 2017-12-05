@@ -22,6 +22,7 @@ func TestBasicDummy(t *testing.T) {
 	q.Conjugated()
 	_ = q.Conjugate()
 	_ = q.AsArray()
+	_ = q.AsQuaternion()
 }
 
 func TestEulerConversion(t *testing.T) {

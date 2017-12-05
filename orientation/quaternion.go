@@ -1,6 +1,7 @@
 /*
 orientation calculation for manipulating cyxtal orientations
 rotations.
+
 */
 
 package orientation
@@ -98,6 +99,11 @@ func (q *Quaternion) Diff(q2 Quaternion) float64 {
 // AsArray returns the quaternion as a simple float64 array
 func (q *Quaternion) AsArray() [4]float64 {
 	return [4]float64{q.W, q.X, q.Y, q.Z}
+}
+
+// AsQuaternion returns a copy of the given quaternion
+func (q *Quaternion) AsQuaternion() Quaternion {
+	return Quaternion{W: q.W, X: q.X, Y: q.Y, Z: q.Z}
 }
 
 // AsBungeEulers returns the Euler angles equivalent of the quaternion
