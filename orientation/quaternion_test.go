@@ -5,6 +5,7 @@ Testing for the quanternion packages
 package orientation
 
 import (
+	"fmt"
 	"math"
 	"testing"
 )
@@ -37,7 +38,7 @@ func TestEulerConversion(t *testing.T) {
 		diff += math.Abs(e - eulersCalc[i])
 	}
 
-	if diff > 1e-5 {
+	if diff > 1e-8 {
 		t.Fail()
 	}
 
@@ -50,7 +51,7 @@ func TestEulerConversion(t *testing.T) {
 		diff += math.Abs(e - eulersCalc[i])
 	}
 
-	if diff > 1e-5 {
+	if diff > 1e-8 {
 		t.Fail()
 	}
 
@@ -63,7 +64,38 @@ func TestEulerConversion(t *testing.T) {
 		diff += math.Abs(e - eulersCalc[i])
 	}
 
-	if diff > 1e-5 {
+	if diff > 1e-8 {
+		t.Fail()
+	}
+}
+
+func TestAngleAxisConversion(t *testing.T) {
+	q := Quaternion{}
+	q.Random()
+
+	ang, axis := q.AsAngleAxis(true)
+
+	q1 := Quaternion{}
+	q1.FromAngleAxis(ang, axis, true)
+
+	if q1.Diff(q) > 1e-8 {
+		t.Fail()
+	}
+}
+
+func TestRotationMatrixConversion(t *testing.T) {
+	q := Quaternion{}
+	q.Random()
+
+	m := q.AsMatrix()
+
+	q1 := Quaternion{}
+	q1.FromMatrix(m)
+
+	if q1.Diff(q) > 1e-8 {
+		fmt.Println(m)
+		fmt.Println(q)
+		fmt.Println(q1)
 		t.Fail()
 	}
 }
@@ -81,6 +113,25 @@ func TestQuaternionMul(t *testing.T) {
 	if q2.Diff(q0.Mul(q1)) > 1e-8 {
 		t.Fail()
 	}
+}
+
+func TestRotateVec(t *testing.T) {
+	q := Quaternion{}
+	q.FromBungeEulers([3]float64{45, 0, 0}, true)
+
+	vec := q.RotateVec([3]float64{1, 0, 0})
+
+	vecRotated := [3]float64{math.Sqrt(2) / 2, math.Sqrt(2) / 2, 0}
+
+	err := 0.0
+	for i, v := range vec {
+		err += math.Abs(v - vecRotated[i])
+	}
+
+	if err > 1e-8 {
+		t.Fail()
+	}
+
 }
 
 func TestNorm(t *testing.T) {

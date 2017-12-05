@@ -85,7 +85,14 @@ func (q *Quaternion) Mul(q2 Quaternion) Quaternion {
 
 // Diff returns the total difference between two quaternions
 func (q *Quaternion) Diff(q2 Quaternion) float64 {
-	return math.Abs(q.W - q2.W + q.X - q2.X + q.Y - q2.Y + q.Z - q2.Z)
+	delta1 := math.Abs(q.W - q2.W + q.X - q2.X + q.Y - q2.Y + q.Z - q2.Z)
+	delta2 := math.Abs(-q.W - q2.W - q.X - q2.X - q.Y - q2.Y - q.Z - q2.Z)
+
+	if delta1 < delta2 {
+		return delta1
+	}
+
+	return delta2
 }
 
 // AsArray returns the quaternion as a simple float64 array
@@ -135,6 +142,45 @@ func (q *Quaternion) AsBungeEulers(indegree bool) [3]float64 {
 	}
 
 	return eulers
+}
+
+// FromMatrix set the quaternion with given rotation matrix
+// Modified Method to calculate Quaternion from Orientation Matrix,
+// Source: http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+func (q *Quaternion) FromMatrix(r [3][3]float64) {
+	tr := r[0][0] + r[1][1] + r[2][2]
+	s := math.Sqrt(tr+1) * 2.0
+
+	if math.Abs(tr) > 1e-8 {
+		q.W = s * 0.25
+		q.X = (r[2][1] - r[1][2]) / s
+		q.Y = (r[0][2] - r[2][0]) / s
+		q.Z = (r[1][0] - r[0][1]) / s
+	} else if (r[0][0] > r[1][1]) && (r[0][0] > r[2][2]) {
+		t := r[0][0] - r[1][1] - r[2][2] + 1.0
+		s = 2.0 * math.Sqrt(t)
+
+		q.W = (r[2][1] - r[1][2]) / s
+		q.X = s * 0.25
+		q.Y = (r[0][1] + r[1][0]) / s
+		q.Z = (r[2][0] + r[0][2]) / s
+	} else if r[1][1] > r[2][2] {
+		t := -r[0][0] + r[1][1] - r[2][2] + 1.0
+		s = 2.0 * math.Sqrt(t)
+
+		q.W = (r[0][2] - r[2][0]) / s
+		q.X = (r[0][1] + r[1][0]) / s
+		q.Y = s * 0.25
+		q.Z = (r[1][2] + r[2][1]) / s
+	} else {
+		t := -r[0][0] - r[1][1] + r[2][2] + 1.0
+		s = 2.0 * math.Sqrt(t)
+
+		q.W = (r[1][0] - r[0][1]) / s
+		q.X = (r[2][0] + r[0][2]) / s
+		q.Y = (r[1][2] + r[2][1]) / s
+		q.Z = s * 0.25
+	}
 }
 
 // AsMatrix returns the rotation matrix equivalent of given quaternion
@@ -207,6 +253,20 @@ func (q *Quaternion) FromAngleAxis(ang float64, axis [3]float64, indegree bool) 
 	q.X = math.Sin(ang/2) * axis[0] / axisVectorLen
 	q.Y = math.Sin(ang/2) * axis[1] / axisVectorLen
 	q.Z = math.Sin(ang/2) * axis[2] / axisVectorLen
+}
+
+// AsAngleAxis returns the angle-axis pair representation of the orientation
+func (q *Quaternion) AsAngleAxis(indegree bool) (ang float64, axis [3]float64) {
+	ang = math.Acos(q.W) * 2
+
+	norm := math.Sqrt(q.X*q.X + q.Y*q.Y + q.Z*q.Z)
+	axis = [3]float64{q.X / norm, q.Y / norm, q.Z / norm}
+
+	if indegree {
+		ang = ang / math.Pi * 180
+	}
+
+	return ang, axis
 }
 
 // FromBungeEulers returns a quaternion converted from given Bunge Euler angles
